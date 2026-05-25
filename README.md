@@ -12,4 +12,4 @@
 2. Создать виртуальное окружение
 3. Установить зависимости: `pip install -r requirements.txt`
 4. Применить миграции: `python manage.py migrate`
-5. Запустить сервер: `python manage.py runserver`
+5. Запустить сервер: `python manage.py runsersdadaver`
