@@ -1,0 +1,29 @@
+# Виртуальное окружение
+venv/
+.venv/
+env/
+.env
+
+# Базы данных (если используешь SQLite)
+db.sqlite3
+*.db
+
+# Кэш и скомпилированные файлы Python
+__pycache__/
+*.pyc
+
+# Логи
+*.log
+
+# Настройки IDE
+.vscode/
+.idea/
+*.swp
+
+# Файлы с секретами
+config.py
+secrets.py
+
+# Статика и медиа (на будущее)
+staticfiles/
+media/
