@@ -20,8 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yhkjy!0ckyj&rknoq6@!$yvqp-j*by$m0^4h@z1%19pec%#&t0'
-
+key = open("secretKey.txt", "r")
+SECRET_KEY = key.readline()
+key.close()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -37,8 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
 ]
-
+AUTH_USER_MODEL = 'core.UserData'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -65,7 +67,7 @@ TEMPLATES = [
         },
     },
 ]
-
+LOGIN_URL = '/login/'
 WSGI_APPLICATION = 'finance_project.wsgi.application'
 
 

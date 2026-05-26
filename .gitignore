@@ -23,6 +23,7 @@ __pycache__/
 # Файлы с секретами
 config.py
 secrets.py
+secretKey.txt
 
 # Статика и медиа (на будущее)
 staticfiles/
