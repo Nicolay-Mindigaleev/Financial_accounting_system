@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Изменить имя категории</h2>
+
+<form method="post" action="{% url 'change_category' %}">
+    {% csrf_token %}
+    <p>
+        <label>Выберите категорию:</label>
+        <select name="id" required>
+            {% for category in categories %}
+                <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label>Новое имя:</label>
+        <input type="text" name="category_name" required>
+    </p>
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'index' %}">Отмена</a>
+</form>
+{% endblock %}

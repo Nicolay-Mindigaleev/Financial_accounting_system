@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Удалить категорию</h2>
+<ul>
+    {% for category in categories %}
+        <li>
+            {{ category.category_name }}
+            <form method="post" action="{% url 'delete_category' %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ category.category_id }}">
+                <button type="submit">Удалить</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>Нет категорий для удаления</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'index' %}">Назад</a>
+{% endblock %}
