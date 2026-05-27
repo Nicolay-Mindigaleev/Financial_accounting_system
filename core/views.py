@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Transaction
+from .models import Transaction, Category
 from .forms import UserDataCreationForm
+from django.shortcuts import get_object_or_404
 #registration or auntification
 
 def register_view(request):
@@ -13,11 +14,11 @@ def register_view(request):
             user = form.save()
             return redirect("index")
     form = UserDataCreationForm()
-    return render(request, "core/registration.html",  {'form': form})
+    return render(request, "core/registration.html",  {"form": form})
 
 def login_view(request):
     if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
+        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -34,6 +35,51 @@ def logout_view(request):
 @login_required
 def index(request):
     transactions = Transaction.objects.filter(user=request.user)
-    return render(request, "core/index.html", {'transactions': transactions})
+    categories = Category.objects.filter(user=request.user)
+    return render(request, "core/index.html", {
+        "transactions": transactions,
+        "categories": categories
+    })
+
+@login_required
 def add_transaction(request):
-    return redirect("index")
+    categories = Category.objects.filter(user=request.user)
+    if request.method == "POST":
+        Transaction.objects.create(
+            user=request.user,
+            category_id=request.POST["category"],
+            operation=request.POST["operation"],
+            transaction_sum=request.POST["amount"],
+            date=request.POST["date"],
+            description=request.POST.get("description", "")
+        )
+        return redirect("index")
+    return render(request, "core/add_transaction.html", {"categories": categories})
+
+@login_required
+def delete_transaction(request):
+    transactions = Transaction.objects.filter(user=request.user)
+    if request.method == "POST":
+        transaction_id = request.POST.get("id")
+        if transaction_id:
+            Transaction.objects.filter(
+                id=transaction_id,
+                user=request.user
+            ).delete()
+        return redirect("index")
+    return render(request, "core/delete_transaction.html", {"transactions": transactions})
+
+@login_required
+def change_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, id=pk, user=request.user)
+    categories = Category.objects.filter(user=request.user)
+    if request.method == "POST":
+        transaction.category_id = request.POST["category"]
+        transaction.operation = request.POST["operation"]
+        transaction.transaction_sum = request.POST["amount"]
+        transaction.date = request.POST["date"]
+        transaction.description = request.POST.get("description", "")
+        transaction.save()
+        return redirect("index")
+    return render(request, "core/change_transaction.html", {"transaction": transaction,
+                                                            "categories": categories})
