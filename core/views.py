@@ -30,8 +30,8 @@ def logout_view(request):
     logout(request)
     return redirect("index")
 
-#main functional
 
+#main page
 @login_required
 def index(request):
     transactions = Transaction.objects.filter(user=request.user)
@@ -41,6 +41,7 @@ def index(request):
         "categories": categories
     })
 
+#transaction CRUD
 @login_required
 def add_transaction(request):
     categories = Category.objects.filter(user=request.user)
@@ -83,3 +84,35 @@ def change_transaction(request, pk):
         return redirect("index")
     return render(request, "core/change_transaction.html", {"transaction": transaction,
                                                             "categories": categories})
+#categories CRUD
+@login_required
+def add_category(request):
+    if request.method == "POST":
+        Category.objects.create(
+            user=request.user,
+            category_name=request.POST.get("category_name", "")
+        )
+        return redirect("index")
+    return render(request, "core/add_category.html")    
+
+@login_required
+def delete_category(request):
+    categories = Category.objects.filter(user=request.user)
+    if request.method == "POST":
+        category_id = request.POST.get("id")
+        if category_id:
+            Category.objects.filter(category_id=category_id,
+                                    user=request.user).delete()
+        return redirect("index")
+    return render(request, "core/delete_category.html", {"categories": categories})    
+
+@login_required
+def change_category(request):
+    categories = Category.objects.filter(user=request.user)
+    if request.method == "POST":
+        category_id = request.POST.get("id")
+        new_name = request.POST.get("category_name", "").strip()
+        if category_id and new_name:
+            Category.objects.filter(category_id=category_id, user=request.user).update(category_name=new_name)
+        return redirect("index")
+    return render(request, "core/change_category.html", {"categories": categories})
