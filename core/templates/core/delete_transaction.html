@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Удалить транзакцию</h2>
+<ul>
+    {% for transaction in transactions %}
+        <li>
+            {{ transaction.date }} - {{ transaction.category.category_name }} - {{ transaction.transaction_sum }} ₽
+            <form method="post" action="{% url 'delete_transaction' %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ transaction.id }}">
+                <button type="submit">Удалить</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>Нет транзакций для удаления</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'index' %}">Назад</a>
+{% endblock %}
