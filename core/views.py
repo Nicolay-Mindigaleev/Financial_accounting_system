@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Transaction, Category
@@ -8,15 +8,17 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 from datetime import datetime
 
-#registration and auntification
+
+# registration and auntification
 def register_view(request):
     if request.method == "POST":
         form = UserDataCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            form.save()
             return redirect("index")
     form = UserDataCreationForm()
     return render(request, "core/registration.html",  {"form": form})
+
 
 def login_view(request):
     if request.method == "POST":
@@ -28,31 +30,42 @@ def login_view(request):
     form = AuthenticationForm()
     return render(request, "core/login.html", {"form": form})
 
+
 def logout_view(request):
     logout(request)
     return redirect("index")
 
 
-#main page
+# main page
 @login_required
 def index(request):
-    transactions = Transaction.objects.filter(user=request.user).order_by('-date')[:5] 
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')[:5]
     categories = Category.objects.filter(user=request.user)
     now = datetime.now()
-    transactions_for_last_month = Transaction.objects.filter(user=request.user, date__year=now.year, date__month=now.month)
-    total_incomes = transactions_for_last_month.filter(operation="Income").aggregate(Sum("transaction_sum"))["transaction_sum__sum"] or 0
-    total_expenses = transactions_for_last_month.filter(operation="Consumption").aggregate(Sum("transaction_sum"))["transaction_sum__sum"] or 0
+    transactions_for_last_month = Transaction.objects.filter(user=request.user,
+                                                             date__year=now.year,
+                                                             date__month=now.month)
+    total_incomes = transactions_for_last_month.filter(operation="Income").aggregate(
+        Sum("transaction_sum")
+        )["transaction_sum__sum"] or 0
+    total_expenses = transactions_for_last_month.filter(operation="Consumption").aggregate(
+        Sum("transaction_sum")
+        )["transaction_sum__sum"] or 0
     balance = total_incomes - total_expenses
     balance_sign = balance >= 0
     balance = abs(balance)
-    main_total = {"incomes": total_incomes, "expenses": total_expenses, "balance": balance, "balance_sign": balance_sign}
+    main_total = {"incomes": total_incomes,
+                  "expenses": total_expenses,
+                  "balance": balance,
+                  "balance_sign": balance_sign}
     return render(request, "core/index.html", {
         "transactions": transactions,
         "categories": categories,
         "transaction_sum": main_total
     })
 
-#transaction CRUD
+
+# transaction CRUD
 @login_required
 def add_transaction(request):
     categories = Category.objects.filter(user=request.user)
@@ -68,6 +81,7 @@ def add_transaction(request):
         return redirect("index")
     return render(request, "core/add_transaction.html", {"categories": categories})
 
+
 @login_required
 def delete_transaction(request):
     transactions = Transaction.objects.filter(user=request.user)
@@ -80,6 +94,7 @@ def delete_transaction(request):
             ).delete()
         return redirect("index")
     return render(request, "core/delete_transaction.html", {"transactions": transactions})
+
 
 @login_required
 def change_transaction(request, pk):
@@ -95,7 +110,9 @@ def change_transaction(request, pk):
         return redirect("index")
     return render(request, "core/change_transaction.html", {"transaction": transaction,
                                                             "categories": categories})
-#categories CRUD
+
+
+# categories CRUD
 @login_required
 def add_category(request):
     if request.method == "POST":
@@ -104,7 +121,8 @@ def add_category(request):
             category_name=request.POST.get("category_name", "")
         )
         return redirect("index")
-    return render(request, "core/add_category.html")    
+    return render(request, "core/add_category.html")
+
 
 @login_required
 def delete_category(request):
@@ -115,7 +133,8 @@ def delete_category(request):
             Category.objects.filter(category_id=category_id,
                                     user=request.user).delete()
         return redirect("index")
-    return render(request, "core/delete_category.html", {"categories": categories})    
+    return render(request, "core/delete_category.html", {"categories": categories})
+
 
 @login_required
 def change_category(request):
@@ -128,9 +147,10 @@ def change_category(request):
         return redirect("index")
     return render(request, "core/change_category.html", {"categories": categories})
 
-#report page
+
+# report page
 @login_required
-def report(request): 
+def report(request):
     from_date_str = request.GET.get('from')
     to_date_str = request.GET.get('to')
     sort_by = request.GET.get('sort', 'date')
@@ -148,16 +168,23 @@ def report(request):
         transactions = transactions.order_by(sort_by)
     else:
         transactions = transactions.order_by('date')
-    total_incomes = transactions.filter(operation="Income").aggregate(Sum("transaction_sum"))["transaction_sum__sum"] or 0
-    total_expenses = transactions.filter(operation="Consumption").aggregate(Sum("transaction_sum"))["transaction_sum__sum"] or 0
+    total_incomes = transactions.filter(operation="Income").aggregate(
+        Sum("transaction_sum")
+        )["transaction_sum__sum"] or 0
+    total_expenses = transactions.filter(operation="Consumption").aggregate(
+        Sum("transaction_sum")
+        )["transaction_sum__sum"] or 0
     balance = total_incomes - total_expenses
     balance_sign = balance >= 0
     balance = abs(balance)
-    main_total = {"incomes": total_incomes, "expenses": total_expenses, "balance": balance, "balance_sign": balance_sign}
+    main_total = {"incomes": total_incomes,
+                  "expenses": total_expenses,
+                  "balance": balance,
+                  "balance_sign": balance_sign}
     user_transactions = transactions
     context = {"transaction": main_total,
-               "from_date": from_date, 
-               "to_date": to_date, 
+               "from_date": from_date,
+               "to_date": to_date,
                "transactions": user_transactions,
-               "sort_by": sort_by,}
+               "sort_by": sort_by, }
     return render(request, "core/report.html", context)
