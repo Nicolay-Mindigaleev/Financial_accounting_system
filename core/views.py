@@ -5,8 +5,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Transaction, Category
 from .forms import UserDataCreationForm
 from django.shortcuts import get_object_or_404
-#registration or auntification
+from django.db.models import Sum
+from datetime import datetime
 
+#registration and auntification
 def register_view(request):
     if request.method == "POST":
         form = UserDataCreationForm(request.POST)
@@ -36,9 +38,18 @@ def logout_view(request):
 def index(request):
     transactions = Transaction.objects.filter(user=request.user)
     categories = Category.objects.filter(user=request.user)
+    now = datetime.now()
+    transactions = Transaction.objects.filter(user=request.user, date__year=now.year, date__month=now.month)
+    total_incomes = transactions.filter(operation="Income").aggregate(Sum("transaction_sum"))["transaction_sum__sum"] or 0
+    total_expenses = transactions.filter(operation="Consumption").aggregate(Sum("transaction_sum"))["transaction_sum__sum"] or 0
+    balance = total_incomes - total_expenses
+    balance_sign = balance >= 0
+    balance = abs(balance)
+    main_total = {"incomes": total_incomes, "expenses": total_expenses, "balance": balance, "balance_sign": balance_sign}
     return render(request, "core/index.html", {
         "transactions": transactions,
-        "categories": categories
+        "categories": categories,
+        "transaction_sum": main_total
     })
 
 #transaction CRUD
