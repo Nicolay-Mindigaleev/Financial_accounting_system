@@ -1,0 +1,61 @@
+{% block content %}
+<h2>Ваш отчёт</h2>
+<form method="get">
+    <p>Выберите период, за который сформировать отчёт</p>
+    <label>От</label>
+    <input type="date" name="from" value="{{ from_date|date:'Y-m-d' }}">
+    <label>До</label>
+    <input type="date" name="to" value="{{ to_date|date:'Y-m-d' }}">
+    <button type="submit">Показать</button>
+</form>
+<p>Ваши доходы за указанный период: {{ transaction.incomes}}</p>
+<p>Ваши расходы за указанный период: {{ transaction.expenses}}</p>
+{% if transaction.balance_sign %}
+<p>За указанный период вы сэкономили: {{transaction.balance}}</p>
+{% else %}
+<p>Ваши убытки за указанный период: {{transaction.balance}}</p>
+{% endif %}
+<h3>Список транзакций за указанный период</h3>
+<table border="1">
+<thead>
+    <tr>
+        <th>
+            <a href="?{{ request.GET.urlencode }}&sort=date">Дата ▲</a>
+            <a href="?{{ request.GET.urlencode }}&sort=-date">▼</a>
+        </th>
+        <th>
+            <a href="?{{ request.GET.urlencode }}&sort=category__category_name">Категория ▲</a>
+            <a href="?{{ request.GET.urlencode }}&sort=-category__category_name">▼</a>
+        </th>
+        <th>
+            <a href="?{{ request.GET.urlencode }}&sort=operation">Тип ▲</a>
+            <a href="?{{ request.GET.urlencode }}&sort=-operation">▼</a>
+        </th>
+        <th>
+            <a href="?{{ request.GET.urlencode }}&sort=transaction_sum">Сумма ▲</a>
+            <a href="?{{ request.GET.urlencode }}&sort=-transaction_sum">▼</a>
+        </th>
+        <th>
+            <a href="?{{ request.GET.urlencode }}&sort=description">Описание ▲</a>
+            <a href="?{{ request.GET.urlencode }}&sort=-description">▼</a>
+        </th>
+    </tr>
+</thead>
+    <tbody>
+        {% for transaction in transactions %}
+        <tr>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.category.category_name }}</td>
+            <td>{{ transaction.operation }}</td>
+            <td>{{ transaction.transaction_sum }}</td>
+            <td>{{ transaction.description }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Нет транзакций</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'index' %}">Назад</a>
+{% endblock %}

@@ -35,8 +35,21 @@
         {% endfor %}
     </tbody>
 </table>
+<br>
 <a href="{% url 'add_transaction' %}">Добавить транзакицию</a>
 <a href="{% url 'delete_transaction' %}">Удалить транзакицию</a>
+<br>
+<h2>Ваша статистика за месяц</h2>
+<p>Ваши доходы за месяц: {{ transaction_sum.incomes}}</p>
+<p>Ваши расходы за месяц: {{ transaction_sum.expenses}}</p>
+{% if transaction_sum.balance_sign %}
+<p>В этом месяце вы сэкономили: {{transaction_sum.balance}}</p>
+{% else %}
+<p>Ваши убытки за месяц: {{transaction_sum.balance}}</p>
+{% endif %}
+<a href="{% url 'report' %}">Посмотреть подробный отчёт</a>
+<br>
+
 <h2>Действия над категориями</h2>
 <br><a href="{% url 'add_category' %}">Добавить категорию</a>
 <br><a href="{% url 'delete_category' %}">Удалить категорию</a>
