@@ -28,6 +28,15 @@
         margin-top: 3px;
         line-height: 1.3;
     }
+    /* Стиль для списков ошибок, которые Django генерирует внутри form.as_p */
+    .form-field-group .errorlist {
+        color: #b30000;
+        list-style-type: none;
+        padding: 0;
+        margin: 5px 0 0 0;
+        font-size: 12px;
+        font-weight: bold;
+    }
     .error-box {
         color: #b30000;
         border: 1px solid #ccc;
@@ -54,7 +63,7 @@
 
 {% if form.errors %}
     <div class="error-box">
-        Пожалуйста, проверьте правильность заполнения полей.
+        Пожалуйста, исправьте ошибки в полях формы ниже.
     </div>
 {% endif %}
 

@@ -16,7 +16,8 @@ def register_view(request):
         if form.is_valid():
             form.save()
             return redirect("index")
-    form = UserDataCreationForm()
+    else:
+        form = UserDataCreationForm()
     return render(request, "core/registration.html",  {"form": form})
 
 
@@ -27,7 +28,8 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             return redirect("index")
-    form = AuthenticationForm()
+    else:
+        form = AuthenticationForm()
     return render(request, "core/login.html", {"form": form})
 
 

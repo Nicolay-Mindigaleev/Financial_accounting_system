@@ -13,12 +13,21 @@
         font-size: 14px;
     }
     .form-field-group input[type="text"],
-    .form-field-group input[type="password"],
-    .form-field-group input[type="email"] {
+    .form-field-group input[type="password"] {
         width: 100%;
         padding: 6px 8px;
         border: 1px solid #ccc;
         font-size: 14px;
+        box-sizing: border-box;
+    }
+    .error-box {
+        color: #b30000;
+        border: 1px solid #ccc;
+        background-color: #fff8f8;
+        padding: 10px;
+        margin-bottom: 15px;
+        max-width: 320px;
+        font-size: 13px;
         box-sizing: border-box;
     }
     form p {
@@ -34,6 +43,19 @@
 </style>
 
 <h2>Вход в систему</h2>
+
+{% if form.errors or form.non_field_errors %}
+    <div class="error-box">
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            |safe {% endfor %}
+        {% else %}
+            Неверное имя пользователя или пароль.
+        {% endif %}
+    </div>
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
     
@@ -43,7 +65,6 @@
     
     <p style="margin-top: 25px;">
         <button type="submit" class="button">Войти</button>
-        <a href="{% url 'index' %}" class="button">Отмена</a>
     </p>
 </form>
 {% endblock %}
