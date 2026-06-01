@@ -1,64 +1,121 @@
 {% block content %}
+<style>
+    .filter-inline-form {
+        margin: 20px 0;
+    }
+    .filter-inline-form p {
+        margin: 0 0 10px 0;
+        font-weight: bold;
+    }
+    .input-date-item {
+        display: inline-block;
+        margin-right: 15px;
+    }
+    .input-date-item label {
+        margin-right: 5px;
+        font-size: 14px;
+    }
+    .input-date-item input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+    .chart-container-flat {
+        max-width: 320px;
+        margin: 30px 0;
+    }
+    .chart-container-flat h3 {
+        font-size: 16px;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 15px;
+    }
+</style>
+
 <h2>Ваш отчёт</h2>
-<form method="get">
-    <p>Выберите период, за который сформировать отчёт</p>
-    <label>От</label>
-    <input type="date" name="from" value="{{ from_date|date:'Y-m-d' }}">
-    <label>До</label>
-    <input type="date" name="to" value="{{ to_date|date:'Y-m-d' }}">
-    <button type="submit">Показать</button>
-</form>
-<p>Ваши доходы за указанный период: {{ transaction.incomes}}</p>
-<p>Ваши расходы за указанный период: {{ transaction.expenses}}</p>
-{% if transaction.balance_sign %}
-<p>За указанный период вы сэкономили: {{transaction.balance}}</p>
-{% else %}
-<p>Ваши убытки за указанный период: {{transaction.balance}}</p>
-{% endif %}
-<h3>Список транзакций за указанный период</h3>
-<table border="1">
-<thead>
-    <tr>
-        <th>
-            <a href="?{{ request.GET.urlencode }}&sort=date">Дата ▲</a>
-            <a href="?{{ request.GET.urlencode }}&sort=-date">▼</a>
-        </th>
-        <th>
-            <a href="?{{ request.GET.urlencode }}&sort=category__category_name">Категория ▲</a>
-            <a href="?{{ request.GET.urlencode }}&sort=-category__category_name">▼</a>
-        </th>
-        <th>
-            <a href="?{{ request.GET.urlencode }}&sort=operation">Тип ▲</a>
-            <a href="?{{ request.GET.urlencode }}&sort=-operation">▼</a>
-        </th>
-        <th>
-            <a href="?{{ request.GET.urlencode }}&sort=transaction_sum">Сумма ▲</a>
-            <a href="?{{ request.GET.urlencode }}&sort=-transaction_sum">▼</a>
-        </th>
-        <th>
-            <a href="?{{ request.GET.urlencode }}&sort=description">Описание ▲</a>
-            <a href="?{{ request.GET.urlencode }}&sort=-description">▼</a>
-        </th>
-    </tr>
-</thead>
+
+<div class="filter-inline-form">
+    <form method="get">
+        <p>Период формирования отчёта</p>
+        <div class="input-date-item">
+            <label>От:</label>
+            <input type="date" name="from" value="{{ from_date|date:'Y-m-d' }}">
+        </div>
+        <div class="input-date-item">
+            <label>До:</label>
+            <input type="date" name="to" value="{{ to_date|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="button">Показать</button>
+    </form>
+</div>
+
+<h2>Финансовые итоги</h2>
+<p>Ваши доходы за период: <span class="income-sum">+{{ transaction.incomes }}</span></p>
+<p>Ваши расходы за период: <span class="expense-sum">-{{ transaction.expenses }}</span></p>
+<p>
+    {% if transaction.balance_sign %}
+        За указанный период вы сэкономили: <strong>{{ transaction.balance }}</strong>
+    {% else %}
+        Ваши убытки за указанный период: <strong>{{ transaction.balance }}</strong>
+    {% endif %}
+</p>
+
+<h2>Список транзакций</h2>
+<table>
+    <thead>
+        <tr>
+            <th>
+                Дата 
+                <a href="?{{ request.GET.urlencode }}&sort=date" style="text-decoration:none; color:#777; margin-left:5px;">▲</a>
+                <a href="?{{ request.GET.urlencode }}&sort=-date" style="text-decoration:none; color:#777;">▼</a>
+            </th>
+            <th>
+                Категория
+                <a href="?{{ request.GET.urlencode }}&sort=category__category_name" style="text-decoration:none; color:#777; margin-left:5px;">▲</a>
+                <a href="?{{ request.GET.urlencode }}&sort=-category__category_name" style="text-decoration:none; color:#777;">▼</a>
+            </th>
+            <th>
+                Тип
+                <a href="?{{ request.GET.urlencode }}&sort=operation" style="text-decoration:none; color:#777; margin-left:5px;">▲</a>
+                <a href="?{{ request.GET.urlencode }}&sort=-operation" style="text-decoration:none; color:#777;">▼</a>
+            </th>
+            <th>
+                Сумма
+                <a href="?{{ request.GET.urlencode }}&sort=transaction_sum" style="text-decoration:none; color:#777; margin-left:5px;">▲</a>
+                <a href="?{{ request.GET.urlencode }}&sort=-transaction_sum" style="text-decoration:none; color:#777;">▼</a>
+            </th>
+            <th>
+                Описание
+                <a href="?{{ request.GET.urlencode }}&sort=description" style="text-decoration:none; color:#777; margin-left:5px;">▲</a>
+                <a href="?{{ request.GET.urlencode }}&sort=-description" style="text-decoration:none; color:#777;">▼</a>
+            </th>
+        </tr>
+    </thead>
     <tbody>
         {% for transaction in transactions %}
         <tr>
-            <td>{{ transaction.date }}</td>
+            <td style="color: #666;">{{ transaction.date }}</td>
             <td>{{ transaction.category.category_name }}</td>
-            <td>{{ transaction.operation }}</td>
-            <td>{{ transaction.transaction_sum }}</td>
-            <td>{{ transaction.description }}</td>
+            <td>
+                {% if transaction.operation == "Income" %}
+                    <span class="income-sum">Доход</span>
+                {% else %}
+                    <span class="expense-sum">Расход</span>
+                {% endif %}
+            </td>
+            <td style="font-weight: bold;">{{ transaction.transaction_sum }}</td>
+            <td style="color: #666;">{{ transaction.description|default:"—" }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">Нет транзакций</td>
+            <td colspan="5" style="text-align: center; color: #777; padding: 20px;">Нет транзакций за этот период</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<div style="max-width: 400px; margin: 20px 0;">
-    <h3>Распределение расходов по категориям</h3>
+
+<div class="chart-container-flat">
+    <h3>Структура расходов</h3>
     <canvas id="expensesChart"></canvas>
 </div>
 
@@ -70,13 +127,11 @@
 
     if (valuesData.length > 0) {
         const ctx = document.getElementById('expensesChart').getContext('2d');
-        
         new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: labelsData,
                 datasets: [{
-                    label: 'Расходы',
                     data: valuesData,
                     backgroundColor: [
                         '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
@@ -91,26 +146,26 @@
                 plugins: {
                     legend: {
                         position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 11 } }
                     },
                     datalabels: {
                         color: '#fff',
-                        font: {
-                            weight: 'bold',
-                            size: 12
-                        },
+                        font: { weight: 'bold', size: 11 },
                         formatter: (value, context) => {
                             const dataset = context.chart.data.datasets[0].data;
                             const sum = dataset.reduce((a, b) => a + b, 0);
-                            const percentage = (value * 100 / sum).toFixed(1) + "%";
-                            return percentage;
+                            return (value * 100 / sum).toFixed(0) + "%";
                         }
                     }
                 }
             }
         });
     } else {
-        document.getElementById('expensesChart').parentElement.innerHTML += '<p>Нет данных по расходам за этот период</p>';
+        document.getElementById('expensesChart').parentElement.innerHTML += '<p style="color: #777; font-size: 14px;">Нет расходов за выбранный период</p>';
     }
 </script>
-<a href="{% url 'index' %}">Назад</a>
+
+<p style="margin-top: 30px;">
+    <a href="{% url 'index' %}" class="button">Назад к главной</a>
+</p>
 {% endblock %}

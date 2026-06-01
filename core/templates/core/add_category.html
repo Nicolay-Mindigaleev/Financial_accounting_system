@@ -1,10 +1,38 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+    /* Локально добавляем только стилизацию самого текстового поля ввода */
+    .input-text {
+        padding: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        width: 100%;
+        max-width: 300px;
+        box-sizing: border-box;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+</style>
+
 <h2>Добавить категорию</h2>
+
 <form method="post" action="{% url 'add_category' %}">
     {% csrf_token %}
-    <p>
+    <div class="form-group">
         <label>Имя категории:</label>
-        <input name="category_name" required></input>
+        <input type="text" name="category_name" class="input-text" required>
+    </div>
+    
+    <p style="margin-top: 20px;">
+        <button type="submit" class="button">Сохранить</button>
+        <a href="{% url 'index' %}" class="button">Назад</a>
     </p>
-    <button type="submit">Сохранить</button>
 </form>
-<a href="{% url 'index' %}">Назад</a>
+{% endblock %}

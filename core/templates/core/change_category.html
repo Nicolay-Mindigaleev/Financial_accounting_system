@@ -1,23 +1,48 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+<style>
+    .form-field-group {
+        margin-bottom: 15px;
+        max-width: 320px;
+    }
+    .form-field-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .form-element {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+</style>
+
 <h2>Изменить имя категории</h2>
 
 <form method="post" action="{% url 'change_category' %}">
     {% csrf_token %}
-    <p>
+    
+    <div class="form-field-group">
         <label>Выберите категорию:</label>
-        <select name="id" required>
+        <select name="id" class="form-element" required>
             {% for category in categories %}
                 <option value="{{ category.category_id }}">{{ category.category_name }}</option>
             {% endfor %}
         </select>
-    </p>
-    <p>
+    </div>
+    
+    <div class="form-field-group">
         <label>Новое имя:</label>
-        <input type="text" name="category_name" required>
+        <input type="text" name="category_name" class="form-element" required>
+    </div>
+    
+    <p style="margin-top: 25px;">
+        <button type="submit" class="button">Сохранить</button>
+        <a href="{% url 'index' %}" class="button">Отмена</a>
     </p>
-    <button type="submit">Сохранить</button>
-    <a href="{% url 'index' %}">Отмена</a>
 </form>
 {% endblock %}

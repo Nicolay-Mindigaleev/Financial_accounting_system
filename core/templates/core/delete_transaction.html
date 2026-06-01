@@ -1,20 +1,73 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+<style>
+    .delete-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    .delete-table th, .delete-table td {
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        text-align: left;
+    }
+    .delete-table th {
+        background-color: #f5f5f5;
+    }
+    .delete-table tr:hover td {
+        background-color: #fafafa;
+    }
+    .btn-delete-action {
+        display: inline-block;
+        padding: 4px 8px;
+        background-color: #f0f0f0;
+        color: #b30000;
+        border: 1px solid #ccc;
+        text-decoration: none;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .btn-delete-action:hover {
+        background-color: #ffe6e6;
+        border-color: #b30000;
+    }
+</style>
+
 <h2>Удалить транзакцию</h2>
-<ul>
-    {% for transaction in transactions %}
-        <li>
-            {{ transaction.date }} - {{ transaction.category.category_name }} - {{ transaction.transaction_sum }} ₽
-            <form method="post" action="{% url 'delete_transaction' %}" style="display: inline;">
-                {% csrf_token %}
-                <input type="hidden" name="id" value="{{ transaction.id }}">
-                <button type="submit">Удалить</button>
-            </form>
-        </li>
-    {% empty %}
-        <li>Нет транзакций для удаления</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'index' %}">Назад</a>
+
+<table class="delete-table">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Категория</th>
+            <th>Сумма</th>
+            <th style="text-align: right; width: 100px;">Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction in transactions %}
+        <tr>
+            <td style="color: #666; font-size: 13px;">{{ transaction.date }}</td>
+            <td>{{ transaction.category.category_name }}</td>
+            <td style="font-weight: bold;">{{ transaction.transaction_sum }} ₽</td>
+            <td style="text-align: right;">
+                <form method="post" action="{% url 'delete_transaction' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ transaction.id }}">
+                    <button type="submit" class="btn-delete-action">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" style="text-align: center; color: #777; padding: 15px;">Нет транзакций для удаления</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="margin-top: 20px;">
+    <a href="{% url 'index' %}" class="button">Назад</a>
+</p>
 {% endblock %}

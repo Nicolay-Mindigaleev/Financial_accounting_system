@@ -1,11 +1,80 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.5;
+        color: #333;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    h1, h2 {
+        border-bottom: 2026px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+        margin-top: 30px;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 6px 12px;
+        background-color: #f0f0f0;
+        color:n#333;
+        border: 1px solid #ccc;
+        text-decoration: none;
+        font-size: 14px;
+        margin-right: 5px;
+    }
+    .button:hover {
+        background-color: #e0e0e0;
+    }
+    .button-delete {
+        color: #b30000;
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+    }
+    .styled-table th, .styled-table td {
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        text-align: left;
+    }
+    .styled-table th {
+        background-color: #f5f5f5;
+    }
+
+    .income-sum { color: green; font-weight: bold; }
+    .expense-sum { color: red; font-weight: bold; }
+</style>
+
 <h1>Мои финансы</h1>
 
+<h2>Ваша статистика за месяц</h2>
+<p>Ваши доходы за месяц: <span class="income-sum">{{ transaction_sum.incomes }}</span></p>
+<p>Ваши расходы за месяц: <span class="expense-sum">{{ transaction_sum.expenses }}</span></p>
+<p>
+    {% if transaction_sum.balance_sign %}
+        В этом месяце вы сэкономили: <strong>{{ transaction_sum.balance }}</strong>
+    {% else %}
+        Ваши убытки за месяц: <strong>{{ transaction_sum.balance }}</strong>
+    {% endif %}
+</p>
+<p><a href="{% url 'report' %}">Посмотреть подробный отчёт &rarr;</a></p>
 
 <h2>Список транзакций</h2>
-<table border="1">
+<div style="margin-bottom: 10px;">
+    <a href="{% url 'add_transaction' %}" class="button">Добавить транзакцию</a>
+    <a href="{% url 'delete_transaction' %}" class="button button-delete">Удалить транзакцию</a>
+</div>
+
+<!-- Заменили border="1" на наш класс -->
+<table class="styled-table">
     <thead>
         <tr>
             <th>Дата</th>
@@ -21,37 +90,28 @@
         <tr>
             <td>{{ transaction.date }}</td>
             <td>{{ transaction.category.category_name }}</td>
-            <td>{{ transaction.operation }}</td>
+            <td>
+                {% if transaction.operation == "Income" %}Доход{% else %}Расход{% endif %}
+            </td>
             <td>{{ transaction.transaction_sum }}</td>
-            <td>{{ transaction.description }}</td>
+            <td>{{ transaction.description|default:"—" }}</td>
             <td>
                 <a href="{% url 'change_transaction' transaction.id %}">Изменить</a>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">Нет транзакций</td>
+            <td colspan="6" style="text-align: center; color: #777;">Нет транзакций</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<br>
-<a href="{% url 'add_transaction' %}">Добавить транзакицию</a>
-<a href="{% url 'delete_transaction' %}">Удалить транзакицию</a>
-<br>
-<h2>Ваша статистика за месяц</h2>
-<p>Ваши доходы за месяц: {{ transaction_sum.incomes}}</p>
-<p>Ваши расходы за месяц: {{ transaction_sum.expenses}}</p>
-{% if transaction_sum.balance_sign %}
-<p>В этом месяце вы сэкономили: {{transaction_sum.balance}}</p>
-{% else %}
-<p>Ваши убытки за месяц: {{transaction_sum.balance}}</p>
-{% endif %}
-<a href="{% url 'report' %}">Посмотреть подробный отчёт</a>
-<br>
 
 <h2>Действия над категориями</h2>
-<br><a href="{% url 'add_category' %}">Добавить категорию</a>
-<br><a href="{% url 'delete_category' %}">Удалить категорию</a>
-<br><a href="{% url 'change_category' %}">Изменить имя категории</a>
+<p>
+    <a href="{% url 'add_category' %}" class="button">Добавить категорию</a>
+    <a href="{% url 'change_category' %}" class="button">Изменить имя категории</a>
+    <a href="{% url 'delete_category' %}" class="button button-delete">Удалить категорию</a>
+</p>
+
 {% endblock %}
