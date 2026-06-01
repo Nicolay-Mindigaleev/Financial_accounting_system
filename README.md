@@ -25,7 +25,7 @@
 
 1. Клонировать репозиторий:
    ```bash
-   git clone https://github.com
+   git clone https://github.com/Nicolay-Mindigaleev/Financial_accounting_system.git
    cd Financial_accounting_system
    ```
 
