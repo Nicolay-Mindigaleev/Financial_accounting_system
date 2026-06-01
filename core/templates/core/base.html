@@ -1,11 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Финансы</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            text-align: right;
+        }
+        nav a {
+            color: #555;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        h1, h2, h3 {
+            color: #222;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 6px;
+            margin-top: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #e8e8e8;
+            border-color: #bbb;
+        }
+        .button-delete {
+            color: #b30000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        table tr:hover td {
+            background-color: #fafafa;
+        }
+
+        .income-sum { color: #27ae60; font-weight: bold; }
+        .expense-sum { color: #c0392b; font-weight: bold; }
+    </style>
 </head>
 <body>
     <nav>
         {% if user.is_authenticated %}
+            <span style="float: left; font-size: 14px; color: #777; padding-top: 2px;">Пользователь: <strong>{{ user.username }}</strong></span>
             <a href="{% url 'logout' %}">Выйти</a>
         {% else %}
             <a href="{% url 'login' %}">Войти</a>

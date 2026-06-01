@@ -1,10 +1,49 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h2>Вход</h2>
+<style>
+    .form-field-group {
+        margin-bottom: 15px;
+        max-width: 320px;
+    }
+    .form-field-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .form-field-group input[type="text"],
+    .form-field-group input[type="password"],
+    .form-field-group input[type="email"] {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+    form p {
+        margin: 0 0 15px 0;
+        max-width: 320px;
+    }
+    form p label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+</style>
+
+<h2>Вход в систему</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Войти</button>
+    
+    <div class="form-field-group">
+        {{ form.as_p }}
+    </div>
+    
+    <p style="margin-top: 25px;">
+        <button type="submit" class="button">Войти</button>
+        <a href="{% url 'index' %}" class="button">Отмена</a>
+    </p>
 </form>
 {% endblock %}
