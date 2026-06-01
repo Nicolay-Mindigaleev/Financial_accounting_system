@@ -182,9 +182,22 @@ def report(request):
                   "balance": balance,
                   "balance_sign": balance_sign}
     user_transactions = transactions
+    category_expenses = (
+        transactions.filter(operation="Consumption")
+        .values("category__category_name")
+        .annotate(total=Sum("transaction_sum"))
+        .order_by("-total")
+    )
+    # 2. Формируем списки для JavaScript (названия категорий и суммы)
+    # Используем list(), чтобы Django сразу выполнил запрос к БД
+    chart_labels = [item["category__category_name"] for item in category_expenses]
+    chart_data = [float(item["total"]) for item in category_expenses] # flo
     context = {"transaction": main_total,
                "from_date": from_date,
                "to_date": to_date,
                "transactions": user_transactions,
-               "sort_by": sort_by, }
+               "sort_by": sort_by,
+                "chart_labels": chart_labels,
+                "chart_data": chart_data,
+                }
     return render(request, "core/report.html", context)
