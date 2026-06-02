@@ -99,10 +99,12 @@ def delete_transaction(request):
 
 
 @login_required
-def change_transaction(request, pk):
-    transaction = get_object_or_404(Transaction, id=pk, user=request.user)
+def change_transaction(request):
+    transaction = Transaction.objects.filter(user=request.user).order_by('-date')
     categories = Category.objects.filter(user=request.user)
     if request.method == "POST":
+        transaction_id = request.POST.get("transaction_id")
+        transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
         transaction.category_id = request.POST["category"]
         transaction.operation = request.POST["operation"]
         transaction.transaction_sum = request.POST["amount"]
@@ -110,7 +112,7 @@ def change_transaction(request, pk):
         transaction.description = request.POST.get("description", "")
         transaction.save()
         return redirect("index")
-    return render(request, "core/change_transaction.html", {"transaction": transaction,
+    return render(request, "core/change_transaction.html", {"transactions": transaction,
                                                             "categories": categories})
 
 

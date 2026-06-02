@@ -20,55 +20,61 @@
         box-sizing: border-box;
         font-family: Arial, sans-serif;
     }
-    .field-hint {
-        display: block;
-        margin-top: 4px;
-        font-size: 12px;
-    }
 </style>
 
 <h2>Редактировать транзакцию</h2>
 
-<form method="post">
+<form method="post" action="{% url 'change_transaction' %}">
     {% csrf_token %}
     
     <div class="form-field-group">
-        <label>Категория:</label>
-        <select name="category" class="form-element" required>
-            {% for category in categories %}
-                <option value="{{ category.category_id }}" {% if category.category_id == transaction.category.category_id %}selected{% endif %}>
-                    {{ category.category_name }}
+        <label>Выберите транзакцию для изменения:</label>
+        <select name="transaction_id" class="form-element" required>
+            {% for tx in transactions %}
+                <option value="{{ tx.id }}">
+                    {{ tx.date|date:"d.m.Y" }} — {{ tx.category.category_name }} — {{ tx.transaction_sum }} ₽
                 </option>
             {% endfor %}
         </select>
-        <a href="{% url 'add_category' %}" class="field-hint">Добавить категорию &rarr;</a>
     </div>
-    
+
+    <hr style="max-width: 320px; margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Введите новые значения ниже:</p>
+
     <div class="form-field-group">
-        <label>Тип:</label>
-        <select name="operation" class="form-element" required>
-            <option value="Income" {% if transaction.operation == 'Income' %}selected{% endif %}>Доход</option>
-            <option value="Consumption" {% if transaction.operation == 'Consumption' %}selected{% endif %}>Расход</option>
+        <label>Новая категория:</label>
+        <select name="category" class="form-element" required>
+            {% for category in categories %}
+                <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+            {% endfor %}
         </select>
     </div>
     
     <div class="form-field-group">
-        <label>Сумма:</label>
-        <input type="number" step="0.01" name="amount" class="form-element" value="{{ transaction.transaction_sum }}" required>
+        <label>Новый тип:</label>
+        <select name="operation" class="form-element" required>
+            <option value="Income">Доход</option>
+            <option value="Consumption">Расход</option>
+        </select>
     </div>
     
     <div class="form-field-group">
-        <label>Дата:</label>
-        <input type="date" name="date" class="form-element" value="{{ transaction.date|date:'Y-m-d' }}" required>
+        <label>Новая сумма:</label>
+        <input type="number" step="0.01" name="amount" class="form-element" required>
     </div>
     
     <div class="form-field-group">
-        <label>Описание:</label>
-        <textarea name="description" class="form-element" rows="3">{{ transaction.description }}</textarea>
+        <label>Новая дата:</label>
+        <input type="date" name="date" class="form-element" required>
+    </div>
+    
+    <div class="form-field-group">
+        <label>Новое описание:</label>
+        <textarea name="description" class="form-element" rows="3"></textarea>
     </div>
     
     <p style="margin-top: 25px;">
-        <button type="submit" class="button">Сохранить</button>
+        <button type="submit" class="button">Сохранить изменения</button>
         <a href="{% url 'index' %}" class="button">Отмена</a>
     </p>
 </form>
