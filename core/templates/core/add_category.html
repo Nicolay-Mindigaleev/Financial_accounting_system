@@ -2,7 +2,6 @@
 
 {% block content %}
 <style>
-    /* Локально добавляем только стилизацию самого текстового поля ввода */
     .input-text {
         padding: 5px;
         border: 1px solid #ccc;
@@ -25,13 +24,14 @@
 
 <form method="post" action="{% url 'add_category' %}">
     {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next_url }}">
     <div class="form-group">
         <label>Имя категории:</label>
         <input type="text" name="category_name" class="input-text" required>
     </div>
     
     <p style="margin-top: 20px;">
-        <button type="submit" class="button">Сохранить</button>
+        <button type="submit" class="button">Добавить</button>
         <a href="{% url 'index' %}" class="button">Назад</a>
     </p>
 </form>

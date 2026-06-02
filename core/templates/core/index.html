@@ -22,7 +22,7 @@
         display: inline-block;
         padding: 6px 12px;
         background-color: #f0f0f0;
-        color:n#333;
+        color:#333;
         border: 1px solid #ccc;
         text-decoration: none;
         font-size: 14px;
@@ -74,7 +74,6 @@
     <a href="{% url 'delete_transaction' %}" class="button button-delete">Удалить транзакцию</a>
 </div>
 
-<!-- Заменили border="1" на наш класс -->
 <table class="styled-table">
     <thead>
         <tr>
@@ -98,7 +97,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6" style="text-align: center; color: #777;">Нет транзакций</td>
+            <td colspan="5" style="text-align: center; color: #777;">Нет транзакций</td>
         </tr>
         {% endfor %}
     </tbody>

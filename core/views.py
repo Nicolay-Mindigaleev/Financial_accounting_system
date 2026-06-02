@@ -124,8 +124,11 @@ def add_category(request):
             user=request.user,
             category_name=request.POST.get("category_name", "")
         )
+        next_url = request.POST.get("next")
+        if next_url:
+            return redirect(next_url)
         return redirect("index")
-    return render(request, "core/add_category.html")
+    return render(request, "core/add_category.html", {"next_url": request.GET.get("next", "")})
 
 
 @login_required

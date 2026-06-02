@@ -48,6 +48,7 @@
                 <option value="{{ category.category_id }}">{{ category.category_name }}</option>
             {% endfor %}
         </select>
+        <a href="{% url 'add_category' %}?next={{ request.path }}" class="field-hint">Добавить новую категорию &rarr;</a>
     </div>
     
     <div class="form-field-group">

@@ -260,8 +260,9 @@ class TransactionCRUDTestCase(TestCase):
                                               date=datetime(2026, 4, 12).strftime("%Y-%m-%d"),
                                               description="test description")
         self.client.post(
-            reverse("change_transaction", kwargs={"pk": transaction.id}),
-            data={"category": category.category_id,
+            reverse("change_transaction"),
+            data={"transaction_id": transaction.id,
+                  "category": category.category_id,
                   "operation": "Income",
                   "amount": "12300",
                   "date": datetime(2026, 4, 12).strftime("%Y-%m-%d"),
