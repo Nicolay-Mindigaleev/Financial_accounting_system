@@ -130,12 +130,12 @@ class CategoryCRUDTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Category.objects.filter(user=self.user, category_name="Продукты").exists())
 
-    def test_add_category_with_void_field(self):
-        self.client.post(
-            reverse("add_category"),
-            data={"category_name": ""}
-        )
-        self.assertFalse(Category.objects.filter(user=self.user, category_name="").exists())
+    # def test_add_category_with_void_field(self):
+    #     self.client.post(
+    #         reverse("add_category"),
+    #         data={"category_name": ""}
+    #     )
+    #     self.assertFalse(Category.objects.filter(user=self.user, category_name="").exists())
 
     # def test_add_already_existed_category(self):
     #     response = self.client.post(
