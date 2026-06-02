@@ -21,7 +21,9 @@
 </style>
 
 <h2>Добавить категорию</h2>
-
+{% if error %}
+    <p style="color: #b30000; font-weight: bold; font-size: 14px;">{{ error }}</p>
+{% endif %}
 <form method="post" action="{% url 'add_category' %}">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next_url }}">

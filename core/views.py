@@ -72,6 +72,12 @@ def index(request):
 def add_transaction(request):
     categories = Category.objects.filter(user=request.user)
     if request.method == "POST":
+        amount_str = request.POST.get("amount", "0")
+        if not amount_str.isdigit() or float(amount_str) <= 0:
+            return render(request, "core/add_transaction.html", {
+                "categories": categories,
+                "error": "Сумма операции должна быть положительным числом больше нуля."
+            }, status=200)
         Transaction.objects.create(
             user=request.user,
             category_id=request.POST["category"],
@@ -103,6 +109,12 @@ def change_transaction(request):
     transaction = Transaction.objects.filter(user=request.user).order_by('-date')
     categories = Category.objects.filter(user=request.user)
     if request.method == "POST":
+        amount_str = request.POST.get("amount", "0")
+        if not amount_str.isdigit() or float(amount_str) <= 0:
+            return render(request, "core/add_transaction.html", {
+                "categories": categories,
+                "error": "Сумма операции должна быть положительным числом больше нуля."
+            }, status=200)
         transaction_id = request.POST.get("transaction_id")
         transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
         transaction.category_id = request.POST["category"]
@@ -120,6 +132,12 @@ def change_transaction(request):
 @login_required
 def add_category(request):
     if request.method == "POST":
+        category_name = request.POST.get("category_name", "").strip()
+        if Category.objects.filter(user=request.user, category_name=category_name).exists():
+            return render(request, "core/add_category.html", {
+                "next_url": request.POST.get("next", ""),
+                "error": f"Категория '{category_name}' уже существует."
+            }, status=200)
         Category.objects.create(
             user=request.user,
             category_name=request.POST.get("category_name", "")
@@ -145,6 +163,12 @@ def delete_category(request):
 
 @login_required
 def change_category(request):
+    category_name = request.POST.get("category_name", "").strip()
+    if Category.objects.filter(user=request.user, category_name=category_name).exists():
+        return render(request, "core/add_category.html", {
+            "next_url": request.POST.get("next", ""),
+            "error": f"Категория '{category_name}' уже существует."
+        }, status=200)
     categories = Category.objects.filter(user=request.user)
     if request.method == "POST":
         category_id = request.POST.get("id")
