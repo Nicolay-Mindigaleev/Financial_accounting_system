@@ -130,19 +130,16 @@ class CategoryCRUDTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Category.objects.filter(user=self.user, category_name="Продукты").exists())
 
-    # def test_add_category_with_void_field(self):
-    #     self.client.post(
-    #         reverse("add_category"),
-    #         data={"category_name": ""}
-    #     )
-    #     self.assertFalse(Category.objects.filter(user=self.user, category_name="").exists())
-
-    # def test_add_already_existed_category(self):
-    #     response = self.client.post(
-    #         reverse("add_category"),
-    #         data={"category_name": "Продкты"}
-    #     )
-    #     self.assertEqual(response.status_code, 200)
+    def test_add_already_existed_category(self):
+        self.client.post(
+            reverse("add_category"),
+            data={"category_name": "Продукты"}
+        )
+        self.client.post(
+            reverse("add_category"),
+            data={"category_name": "Продукты"}
+        )
+        self.assertEqual(Category.objects.filter(user=self.user, category_name="Продукты").count(), 1)
 
     def test_change_category_success(self):
         response = self.client.post(
@@ -157,17 +154,21 @@ class CategoryCRUDTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Category.objects.filter(user=self.user, category_name="Еда").exists())
 
-    def test_change_category_with_void_field(self):
+    def test_change_category_name_on_already_exist_category(self):
         self.client.post(
             reverse("add_category"),
             data={"category_name": "Продукты"}
         )
+        self.client.post(
+            reverse("add_category"),
+            data={"category_name": "Техника"}
+        )
         category = Category.objects.get(user=self.user, category_name="Продукты")
         self.client.post(
             reverse("change_category"),
-            data={"id": category.category_id, "category_name": ""}
+            data={"id": category.category_id, "category_name": "Техника"}
         )
-        self.assertFalse(Category.objects.filter(user=self.user, category_name="").exists())
+        self.assertTrue(Category.objects.filter(user=self.user, category_name="Продукты").exists())
 
     def test_delete_category(self):
         self.client.post(
@@ -211,6 +212,27 @@ class TransactionCRUDTestCase(TestCase):
                                                    date=str(datetime(2026, 4, 12).strftime("%Y-%m-%d")),
                                                    description="test description").exists()
                         )
+
+    def test_add_transaction_negative_amount(self):
+        self.client.post(
+            reverse("add_category"),
+            data={"category_name": "Продукты"}
+        )
+        category = Category.objects.get(user=self.user, category_name="Продукты")
+        self.client.post(
+            reverse("add_transaction"),
+            data={"category": category.category_id,
+                  "operation": "Consumption",
+                  "amount": "-300",
+                  "date": datetime(2026, 4, 12).strftime("%Y-%m-%d"),
+                  "description": "test description"
+                  }
+            )
+        self.assertFalse(Transaction.objects.filter(user=self.user,
+                                                    transaction_sum="-300",
+                                                    date=str(datetime(2026, 4, 12).strftime("%Y-%m-%d")),
+                                                    description="test description").exists()
+                         )
 
     def test_delete_transaction_success(self):
         self.client.post(
@@ -276,3 +298,40 @@ class TransactionCRUDTestCase(TestCase):
                                                    transaction_sum="12300",
                                                    date=datetime(2026, 4, 12).strftime("%Y-%m-%d"),
                                                    description="test change description").exists())
+
+    def test_change_transaction_negative_amount(self):
+        self.client.post(
+            reverse("add_category"),
+            data={"category_name": "Продукты"}
+        )
+        category = Category.objects.get(user=self.user, category_name="Продукты")
+        self.client.post(
+            reverse("add_transaction"),
+            data={"category": category.category_id,
+                  "operation": "Consumption",
+                  "amount": "300",
+                  "date": datetime(2026, 4, 12).strftime("%Y-%m-%d"),
+                  "description": "test description"
+                  }
+            )
+        transaction = Transaction.objects.get(user=self.user,
+                                              transaction_sum="300",
+                                              date=datetime(2026, 4, 12).strftime("%Y-%m-%d"),
+                                              description="test description")
+        self.client.post(
+            reverse("change_transaction"),
+            data={"transaction_id": transaction.id,
+                  "category": category.category_id,
+                  "operation": "Income",
+                  "amount": "-12300",
+                  "date": datetime(2026, 4, 12).strftime("%Y-%m-%d"),
+                  "description": "test change description"}
+            )
+        self.assertTrue(Transaction.objects.filter(user=self.user,
+                                                   transaction_sum="300",
+                                                   date=datetime(2026, 4, 12).strftime("%Y-%m-%d"),
+                                                   description="test description").exists())
+        self.assertFalse(Transaction.objects.filter(user=self.user,
+                                                    transaction_sum="-12300",
+                                                    date=datetime(2026, 4, 12).strftime("%Y-%m-%d"),
+                                                    description="test change description").exists())
